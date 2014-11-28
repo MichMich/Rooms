@@ -23,11 +23,14 @@ class ViewController: UIViewController {
         planeView.verticalRooms = plane.verticalRooms
         view.addSubview(planeView)
         
-        // add gesture recognizer
+        // add gesture recognizers
         gestureRecognizer.addTarget(self, action: "panGesture:")
         planeView.addGestureRecognizer(gestureRecognizer)
         
-        //planeView.addGestureRecognizer(UITapGestureRecognizer(target: self, action: "tapped:"))
+        let tapGesture = UITapGestureRecognizer(target: self, action: "startNewGame")
+        tapGesture.numberOfTapsRequired = 2
+        tapGesture.numberOfTouchesRequired = 2
+        planeView.addGestureRecognizer(tapGesture)
         
         // draw pillars
         planeView.pillars = plane.pillars
@@ -52,13 +55,6 @@ class ViewController: UIViewController {
         planeView.rooms = plane.rooms
     }
 
-/*
-    func tapped(gesture:UITapGestureRecognizer) {
-        plane.addRandomWall()
-        planeView.walls = plane.walls
-    }
-*/
-    
     func panGesture(gesture:UIPanGestureRecognizer) {
         
         switch (gesture.state) {

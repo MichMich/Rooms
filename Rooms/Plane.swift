@@ -50,19 +50,27 @@ class Plane {
         self.horizontalRooms = horizontalRooms
         self.verticalRooms = verticalRooms
         
-        generate()
+        reset()
     }
     
     func reset() {
         walls = [Wall]()
         rooms = [Room]()
+        generatePillars()
+        generateRandomWalls()
     }
     
-    func generate() {
+    func generatePillars() {
         for gridX in 0 ... horizontalRooms {
             for gridY in 0 ... verticalRooms {
                 pillars.append(Pillar(x: gridX, y: gridY))
             }
+        }
+    }
+    
+    func generateRandomWalls() {
+        while walls.count < horizontalRooms * verticalRooms {
+            addRandomWall()
         }
     }
     
@@ -79,7 +87,7 @@ class Plane {
         var allowedPillars = [Pillar]()
         
         for otherPillar in pillars {
-            if wallAllowedBetweenPillar(pillar, andPillar: otherPillar) {
+            if wallAllowedBetweenPillar(pillar, andPillar: otherPillar) && otherPillar != pillar {
                 allowedPillars.append(otherPillar)
             }
         }
@@ -100,8 +108,8 @@ class Plane {
     }
     
     func roomsWithWall(wall:Wall, andPlayer player:Player) -> Array<Room> {
+        var foundRooms = [Room]()
         
-        var rooms = [Room]()
         if (wall.startPillar.x == wall.endPillar.x) {
             //Vertical wall
             let topPillar = (wall.startPillar.y < wall.endPillar.y) ? wall.startPillar : wall.endPillar
@@ -109,16 +117,16 @@ class Plane {
             //Check left side of wall
             if (topPillar.x > 0) {
                 //println("Check left side")
-                if (self.hasRoomWithTopLeftPillar(Pillar(x: topPillar.x - 1, y: topPillar.y))) {
-                    rooms.append(Room(topLeftPillar: Pillar(x: topPillar.x - 1, y: topPillar.y), player:player))
+                if (self.hasRoomWithTopLeftPillar(Pillar(x: topPillar.x - 1, y: topPillar.y), usingWall: wall)) {
+                    foundRooms.append(Room(topLeftPillar: Pillar(x: topPillar.x - 1, y: topPillar.y), player:player))
                 }
             }
             
             //Check right side of wall
             if (topPillar.x < horizontalRooms) {
                 //println("Check right side")
-                if (self.hasRoomWithTopLeftPillar(topPillar)) {
-                    rooms.append(Room(topLeftPillar: topPillar, player:player))
+                if (self.hasRoomWithTopLeftPillar(topPillar, usingWall: wall)) {
+                    foundRooms.append(Room(topLeftPillar: topPillar, player:player))
                 }
             }
             
@@ -129,25 +137,36 @@ class Plane {
             //Check above wall
             if (leftPillar.y > 0) {
                 //println("Check above")
-                if (self.hasRoomWithTopLeftPillar(Pillar(x: leftPillar.x, y: leftPillar.y - 1))) {
-                    rooms.append(Room(topLeftPillar: Pillar(x: leftPillar.x, y: leftPillar.y - 1), player:player))
+                if (self.hasRoomWithTopLeftPillar(Pillar(x: leftPillar.x, y: leftPillar.y - 1), usingWall: wall)) {
+                    foundRooms.append(Room(topLeftPillar: Pillar(x: leftPillar.x, y: leftPillar.y - 1), player:player))
                 }
             }
             
             //Check below wall
             if (leftPillar.y < verticalRooms) {
                 //println("Check below")
-                if (self.hasRoomWithTopLeftPillar(leftPillar)) {
-                    rooms.append(Room(topLeftPillar: leftPillar, player:player))
+                if (self.hasRoomWithTopLeftPillar(leftPillar, usingWall: wall)) {
+                    foundRooms.append(Room(topLeftPillar: leftPillar, player:player))
                 }
             }
             
         }
         
-        return rooms
+        return foundRooms
     }
+
     
-    func hasRoomWithTopLeftPillar(topLeftPillar:Pillar) -> Bool {
+    func hasRoomWithTopLeftPillar(topLeftPillar:Pillar, usingWall wall:Wall? = nil) -> Bool {
+    
+        var wallsCopy = [Wall]()
+        for wall in walls {
+            wallsCopy.append(wall)
+        }
+    
+        if let wall = wall? {
+            wallsCopy.append(wall)
+        }
+        
         if (topLeftPillar.x > horizontalRooms || topLeftPillar.y > verticalRooms) {
             return false
         }
@@ -156,17 +175,17 @@ class Plane {
         let bottomLeftPillar = Pillar(x: topLeftPillar.x, y: topLeftPillar.y + 1)
         let bottomRightPillar = Pillar(x: topLeftPillar.x + 1, y: topLeftPillar.y + 1)
 
-        if  self.hasWallBetweenPillar(topLeftPillar, andPillar: topRightPillar) &&
-            self.hasWallBetweenPillar(topRightPillar, andPillar: bottomRightPillar) &&
-            self.hasWallBetweenPillar(bottomRightPillar, andPillar: bottomLeftPillar) &&
-            self.hasWallBetweenPillar(bottomLeftPillar, andPillar: topLeftPillar) {
+        if  self.hasWallBetweenPillar(topLeftPillar, andPillar: topRightPillar, inWalls: wallsCopy) &&
+            self.hasWallBetweenPillar(topRightPillar, andPillar: bottomRightPillar, inWalls: wallsCopy) &&
+            self.hasWallBetweenPillar(bottomRightPillar, andPillar: bottomLeftPillar, inWalls: wallsCopy) &&
+            self.hasWallBetweenPillar(bottomLeftPillar, andPillar: topLeftPillar, inWalls: wallsCopy) {
             return true
         }
         
         return false
     }
     
-    func hasWallBetweenPillar(pillarA:Pillar, andPillar pillarB:Pillar) -> Bool {
+    func hasWallBetweenPillar(pillarA:Pillar, andPillar pillarB:Pillar, inWalls walls:Array<Wall>) -> Bool {
         if find(walls, Wall(startPillar: pillarA, endPillar: pillarB)) != nil {
             return true
         }
@@ -187,6 +206,29 @@ class Plane {
         }
         
         return roomCount
+    }
+    
+    func addRandomWall() {
+        
+        let pillarX = Int(arc4random() % (horizontalRooms + 1))
+        let pillarY = Int(arc4random() % (verticalRooms + 1))
+        let randomPillar = Pillar(x: pillarX, y: pillarY)
+        
+        let allowedConnectionPillars = allowedConnectionPillarsFor(randomPillar)
+        if allowedConnectionPillars.count > 0 {
+            
+            let randomConnectionPillar = allowedConnectionPillars[ Int(arc4random() % UInt32(allowedConnectionPillars.count)) ]
+            if !self.hasWallBetweenPillar(randomPillar, andPillar: randomConnectionPillar, inWalls:self.walls) {
+                
+                let randomWall = Wall(startPillar: randomPillar, endPillar: randomConnectionPillar)
+                let possibleRooms = roomsWithWall(randomWall, andPlayer: .A)
+                
+                if possibleRooms.count == 0 {
+                    walls.append(randomWall)
+                }
+            
+            }
+        }
     }
 }
 

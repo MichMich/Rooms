@@ -27,10 +27,15 @@ class ViewController: UIViewController {
         gestureRecognizer.addTarget(self, action: "panGesture:")
         planeView.addGestureRecognizer(gestureRecognizer)
         
+        //planeView.addGestureRecognizer(UITapGestureRecognizer(target: self, action: "tapped:"))
+        
         // draw pillars
         planeView.pillars = plane.pillars
+        planeView.walls = plane.walls
+        
+        
     }
-
+    
     override func viewDidLayoutSubviews() {
         planeView.frame = view.bounds
     }
@@ -47,6 +52,13 @@ class ViewController: UIViewController {
         planeView.rooms = plane.rooms
     }
 
+/*
+    func tapped(gesture:UITapGestureRecognizer) {
+        plane.addRandomWall()
+        planeView.walls = plane.walls
+    }
+*/
+    
     func panGesture(gesture:UIPanGestureRecognizer) {
         
         switch (gesture.state) {
@@ -68,7 +80,7 @@ class ViewController: UIViewController {
             case UIGestureRecognizerState.Ended:
                 // Gesture Ended. Add wall.
                 if planeView.startPillar != nil && planeView.endPillar != nil {
-                    if (!plane.hasWallBetweenPillar(planeView.startPillar!, andPillar: planeView.endPillar!)) {
+                    if (!plane.hasWallBetweenPillar(planeView.startPillar!, andPillar: planeView.endPillar!, inWalls: plane.walls)) {
                         let newRooms = plane.addWallBetweenPillar(planeView.startPillar!, andPillar: planeView.endPillar!, byPlayer:game.currentPlayer)
                         
                         if newRooms.count > 0 {

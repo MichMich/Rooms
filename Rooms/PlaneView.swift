@@ -11,14 +11,22 @@ import UIKit
 struct Color {
     struct Pillar {
         static let Default = UIColor.whiteColor()
-        static let Start = UIColor.redColor()
+        static let Start = UIColor.yellowColor()
         static let End = UIColor.greenColor()
     }
     struct Wall {
         static let Default = UIColor(white: 0.7, alpha: 1)
         static let Active = UIColor.whiteColor()
     }
-
+    struct Room {
+        static let PlayerA = UIColor(red: 1, green: 0, blue: 0, alpha: 1)
+        static let PlayerB = UIColor(red: 0, green: 0, blue: 1, alpha: 1)
+    }
+    
+    struct Background {
+        static let PlayerA = UIColor(red: 0.25, green: 0, blue: 0, alpha: 1)
+        static let PlayerB = UIColor(red: 0, green: 0, blue: 0.25, alpha: 1)
+    }
 }
 
 
@@ -32,11 +40,18 @@ class PlaneView: UIView {
     
     var pillars: Array<Pillar>?         { didSet { setNeedsDisplay() }}
     var walls: Array<Wall>?             { didSet { setNeedsDisplay() }}
+    var rooms: Array<Room>?             { didSet { setNeedsDisplay() }}
     var startPillar:Pillar?             { didSet { setNeedsDisplay() }}
     var endPillar:Pillar?               { didSet { setNeedsDisplay() }}
     var horizontalRooms:Int = 0         { didSet { setNeedsDisplay() }}
     var verticalRooms:Int = 0           { didSet { setNeedsDisplay() }}
+    var currentPlayer: Player = .A      { didSet { setNeedsDisplay() }}
     
+    var roomSize:CGSize  {
+        get {
+            return CGSizeMake((self.bounds.size.width - PADDING * 2) / CGFloat(horizontalRooms), (self.bounds.size.height - PADDING * 2) / CGFloat(verticalRooms))
+        }
+    }
     
     convenience init(horizontalRooms:Int, verticalRooms:Int) {
         self.init()
@@ -49,8 +64,34 @@ class PlaneView: UIView {
         
         CGContextClearRect(UIGraphicsGetCurrentContext(), rect);
         
+        drawBackground()
+        drawRooms()
         drawLines()
         drawGrid()
+    }
+    
+    func drawBackground() {
+        if (currentPlayer == .A) {
+            Color.Background.PlayerA.setFill()
+        } else {
+            Color.Background.PlayerB.setFill()
+        }
+        
+        UIBezierPath(rect: self.bounds).fill()
+    }
+    
+    func drawRooms() {
+        if let rooms = rooms? {
+            for room in rooms {
+                let topLeftPoint = pillarCenter(room.topLeftPillar)
+                if (room.player == .A) {
+                    Color.Room.PlayerA.setFill()
+                } else {
+                    Color.Room.PlayerB.setFill()
+                }
+                UIBezierPath(rect: CGRect(x: topLeftPoint.x, y: topLeftPoint.y, width: roomSize.width, height: roomSize.height)).fill()
+            }
+        }
     }
    
     func drawLines() {
@@ -103,8 +144,7 @@ class PlaneView: UIView {
     func pillarCenter(gridPoint:Pillar) -> CGPoint {
         
         if horizontalRooms > 0 && verticalRooms > 0 {
-        
-            let roomSize = CGSizeMake((self.bounds.size.width - PADDING * 2) / CGFloat(horizontalRooms), (self.bounds.size.height - PADDING * 2) / CGFloat(verticalRooms))
+    
             return CGPoint(x: roomSize.width * CGFloat(gridPoint.x) + PADDING, y: roomSize.height * CGFloat(gridPoint.y) + PADDING)
 
         }

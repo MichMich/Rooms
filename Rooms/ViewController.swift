@@ -10,7 +10,8 @@ import UIKit
 
 class ViewController: UIViewController {
     
-    let plane = Plane(horizontalRooms: 4, verticalRooms: 7)
+    let game = Game()
+    let plane = Plane(horizontalRooms:5, verticalRooms:7)
     let planeView = PlaneView()
     let gestureRecognizer = UIPanGestureRecognizer()
 
@@ -38,6 +39,13 @@ class ViewController: UIViewController {
         return true
     }
     
+    func startNewGame() {
+        game.reset()
+        plane.reset()
+        planeView.pillars = plane.pillars
+        planeView.walls = plane.walls
+        planeView.rooms = plane.rooms
+    }
 
     func panGesture(gesture:UIPanGestureRecognizer) {
         
@@ -61,7 +69,17 @@ class ViewController: UIViewController {
                 // Gesture Ended. Add wall.
                 if planeView.startPillar != nil && planeView.endPillar != nil {
                     if (!plane.hasWallBetweenPillar(planeView.startPillar!, andPillar: planeView.endPillar!)) {
-                        plane.addWallBetweenPillar(planeView.startPillar!, andPillar: planeView.endPillar!)
+                        let newRooms = plane.addWallBetweenPillar(planeView.startPillar!, andPillar: planeView.endPillar!, byPlayer:game.currentPlayer)
+                        
+                        if newRooms.count > 0 {
+                            planeView.rooms = plane.rooms
+                            checkScore()
+                        } else {
+                            game.nextPlayer()
+                            planeView.currentPlayer = game.currentPlayer
+                            
+                        }
+                        
                         planeView.walls = plane.walls
                     }
                 }
@@ -76,6 +94,22 @@ class ViewController: UIViewController {
             
         }
         
+    }
+    
+    func checkScore() {
+        if (plane.rooms.count >= plane.horizontalRooms * plane.verticalRooms) {
+            let roomsPlayerA = plane.countRoomsForPlayer(.A)
+            let roomsPlayerB = plane.countRoomsForPlayer(.B)
+
+            let title = (roomsPlayerA > roomsPlayerB) ? "RED Wins!" : "BLUE Wins!"
+            let message = "Red: \(roomsPlayerA) - Blue: \(roomsPlayerB)"
+            
+            var alert = UIAlertController(title: title, message: message, preferredStyle: UIAlertControllerStyle.Alert)
+            alert.addAction(UIAlertAction(title: "New Game", style: UIAlertActionStyle.Default, handler: { action in
+                self.startNewGame()
+            }))
+            self.presentViewController(alert, animated: true, completion: nil)
+        }
     }
     
 

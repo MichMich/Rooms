@@ -32,6 +32,7 @@ struct Wall : Equatable {
 
 struct Room {
     var topLeftPillar:Pillar
+    var player:Player = .A
 }
 
 class Plane {
@@ -41,12 +42,20 @@ class Plane {
     
     var pillars = [Pillar]()
     var walls = [Wall]()
+    var rooms = [Room]()
+    
+    var currentPlayer = Player.A
     
     init(horizontalRooms:Int, verticalRooms:Int) {
         self.horizontalRooms = horizontalRooms
         self.verticalRooms = verticalRooms
         
         generate()
+    }
+    
+    func reset() {
+        walls = [Wall]()
+        rooms = [Room]()
     }
     
     func generate() {
@@ -57,8 +66,13 @@ class Plane {
         }
     }
     
-    func addWallBetweenPillar(pillarA:Pillar, andPillar pillarB:Pillar) {
+    func addWallBetweenPillar(pillarA:Pillar, andPillar pillarB:Pillar, byPlayer player:Player) -> Array<Room> {
         walls.append(Wall(startPillar: pillarA, endPillar: pillarB))
+        let newRooms = self.roomsWithWall(Wall(startPillar: pillarA, endPillar: pillarB), andPlayer:player)
+        
+        rooms += newRooms
+        
+        return newRooms
     }
     
     func allowedConnectionPillarsFor(pillar:Pillar) -> Array<Pillar>{
@@ -83,6 +97,54 @@ class Plane {
         }
         
         return false
+    }
+    
+    func roomsWithWall(wall:Wall, andPlayer player:Player) -> Array<Room> {
+        
+        var rooms = [Room]()
+        if (wall.startPillar.x == wall.endPillar.x) {
+            //Vertical wall
+            let topPillar = (wall.startPillar.y < wall.endPillar.y) ? wall.startPillar : wall.endPillar
+            
+            //Check left side of wall
+            if (topPillar.x > 0) {
+                //println("Check left side")
+                if (self.hasRoomWithTopLeftPillar(Pillar(x: topPillar.x - 1, y: topPillar.y))) {
+                    rooms.append(Room(topLeftPillar: Pillar(x: topPillar.x - 1, y: topPillar.y), player:player))
+                }
+            }
+            
+            //Check right side of wall
+            if (topPillar.x < horizontalRooms) {
+                //println("Check right side")
+                if (self.hasRoomWithTopLeftPillar(topPillar)) {
+                    rooms.append(Room(topLeftPillar: topPillar, player:player))
+                }
+            }
+            
+        } else {
+            //Horizontal wall
+            let leftPillar = (wall.startPillar.x < wall.endPillar.x) ? wall.startPillar : wall.endPillar
+            
+            //Check above wall
+            if (leftPillar.y > 0) {
+                //println("Check above")
+                if (self.hasRoomWithTopLeftPillar(Pillar(x: leftPillar.x, y: leftPillar.y - 1))) {
+                    rooms.append(Room(topLeftPillar: Pillar(x: leftPillar.x, y: leftPillar.y - 1), player:player))
+                }
+            }
+            
+            //Check below wall
+            if (leftPillar.y < verticalRooms) {
+                //println("Check below")
+                if (self.hasRoomWithTopLeftPillar(leftPillar)) {
+                    rooms.append(Room(topLeftPillar: leftPillar, player:player))
+                }
+            }
+            
+        }
+        
+        return rooms
     }
     
     func hasRoomWithTopLeftPillar(topLeftPillar:Pillar) -> Bool {
@@ -113,6 +175,18 @@ class Plane {
         }
         
         return false
+    }
+    
+    func countRoomsForPlayer(player:Player) -> Int {
+        var roomCount = 0
+        
+        for room in rooms {
+            if room.player == player {
+                roomCount++
+            }
+        }
+        
+        return roomCount
     }
 }
 

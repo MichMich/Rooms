@@ -13,6 +13,8 @@
 		4C1F6E9B1A24FA440084A328 /* Images.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 4C1F6E9A1A24FA440084A328 /* Images.xcassets */; };
 		4C1F6E9E1A24FA440084A328 /* LaunchScreen.xib in Resources */ = {isa = PBXBuildFile; fileRef = 4C1F6E9C1A24FA440084A328 /* LaunchScreen.xib */; };
 		4C1F6EAA1A24FA440084A328 /* RoomsTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4C1F6EA91A24FA440084A328 /* RoomsTests.swift */; };
+		4C1F6EB41A24FA620084A328 /* PlaneView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4C1F6EB31A24FA620084A328 /* PlaneView.swift */; };
+		4C4A67C01A263AE900803E70 /* Plane.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4C4A67BF1A263AE900803E70 /* Plane.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -36,6 +38,8 @@
 		4C1F6EA31A24FA440084A328 /* RoomsTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = RoomsTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		4C1F6EA81A24FA440084A328 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		4C1F6EA91A24FA440084A328 /* RoomsTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RoomsTests.swift; sourceTree = "<group>"; };
+		4C1F6EB31A24FA620084A328 /* PlaneView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = PlaneView.swift; sourceTree = "<group>"; };
+		4C4A67BF1A263AE900803E70 /* Plane.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Plane.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -77,12 +81,11 @@
 		4C1F6E901A24FA440084A328 /* Rooms */ = {
 			isa = PBXGroup;
 			children = (
-				4C1F6E931A24FA440084A328 /* AppDelegate.swift */,
+				4C1F6EB31A24FA620084A328 /* PlaneView.swift */,
 				4C1F6E951A24FA440084A328 /* ViewController.swift */,
 				4C1F6E971A24FA440084A328 /* Main.storyboard */,
-				4C1F6E9A1A24FA440084A328 /* Images.xcassets */,
-				4C1F6E9C1A24FA440084A328 /* LaunchScreen.xib */,
 				4C1F6E911A24FA440084A328 /* Supporting Files */,
+				4C4A67BF1A263AE900803E70 /* Plane.swift */,
 			);
 			path = Rooms;
 			sourceTree = "<group>";
@@ -90,6 +93,9 @@
 		4C1F6E911A24FA440084A328 /* Supporting Files */ = {
 			isa = PBXGroup;
 			children = (
+				4C1F6E931A24FA440084A328 /* AppDelegate.swift */,
+				4C1F6E9C1A24FA440084A328 /* LaunchScreen.xib */,
+				4C1F6E9A1A24FA440084A328 /* Images.xcassets */,
 				4C1F6E921A24FA440084A328 /* Info.plist */,
 			);
 			name = "Supporting Files";
@@ -212,7 +218,9 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				4C1F6EB41A24FA620084A328 /* PlaneView.swift in Sources */,
 				4C1F6E961A24FA440084A328 /* ViewController.swift in Sources */,
+				4C4A67C01A263AE900803E70 /* Plane.swift in Sources */,
 				4C1F6E941A24FA440084A328 /* AppDelegate.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -407,6 +415,7 @@
 				4C1F6EAF1A24FA440084A328 /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
 		};
 		4C1F6EB01A24FA440084A328 /* Build configuration list for PBXNativeTarget "RoomsTests" */ = {
 			isa = XCConfigurationList;
@@ -415,6 +424,7 @@
 				4C1F6EB21A24FA440084A328 /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
 		};
 /* End XCConfigurationList section */
 	};

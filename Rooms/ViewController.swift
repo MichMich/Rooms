@@ -39,6 +39,10 @@ class ViewController: UIViewController {
         
     }
     
+    override func didRotateFromInterfaceOrientation(fromInterfaceOrientation: UIInterfaceOrientation) {
+        planeView.setNeedsDisplay()
+    }
+    
     override func viewDidLayoutSubviews() {
         planeView.frame = view.bounds
     }

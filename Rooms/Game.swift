@@ -12,10 +12,7 @@ enum Player {
     case A, B
 }
 
-class Game {
- 
-
-    
+class Game { 
     var currentPlayer = Player.A
     
     func nextPlayer() {
@@ -26,4 +23,7 @@ class Game {
         currentPlayer = Player.A
     }
     
+    func random() {
+        currentPlayer = (Int(arc4random() % UInt32(2)) == 1) ? .A : .B
+    }
 }

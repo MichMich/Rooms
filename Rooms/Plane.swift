@@ -44,7 +44,7 @@ class Plane {
     var walls = [Wall]()
     var rooms = [Room]()
     
-    var currentPlayer = Player.A
+    //var currentPlayer = Player.A
     
     init(horizontalRooms:Int, verticalRooms:Int) {
         self.horizontalRooms = horizontalRooms

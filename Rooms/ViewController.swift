@@ -48,8 +48,13 @@ class ViewController: UIViewController {
     }
     
     func startNewGame() {
-        game.reset()
+        game.random()
         plane.reset()
+        updateUI()
+    }
+    
+    func updateUI() {
+        planeView.currentPlayer = game.currentPlayer
         planeView.pillars = plane.pillars
         planeView.walls = plane.walls
         planeView.rooms = plane.rooms
@@ -80,15 +85,12 @@ class ViewController: UIViewController {
                         let newRooms = plane.addWallBetweenPillar(planeView.startPillar!, andPillar: planeView.endPillar!, byPlayer:game.currentPlayer)
                         
                         if newRooms.count > 0 {
-                            planeView.rooms = plane.rooms
                             checkScore()
                         } else {
                             game.nextPlayer()
-                            planeView.currentPlayer = game.currentPlayer
-                            
                         }
                         
-                        planeView.walls = plane.walls
+                        updateUI()
                     }
                 }
                 
